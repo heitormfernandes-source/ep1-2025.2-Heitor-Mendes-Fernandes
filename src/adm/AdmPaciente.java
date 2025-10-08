@@ -90,11 +90,9 @@ public class AdmPaciente {
             String resposta = sc.nextLine().trim().toUpperCase();
 
             if (resposta.equals("S")) {
-                // Listar os planos disponíveis
                 AdmPlanoSaude admPlano = new AdmPlanoSaude();
                 admPlano.listarPlanos();
 
-                // Escolher um plano
                 System.out.print("Informe o ID do plano escolhido: ");
                 int idPlano = Integer.parseInt(sc.nextLine());
 
@@ -107,14 +105,14 @@ public class AdmPaciente {
                 }
 
                 if (planoEscolhido != null) {
-                    paciente.setPlanoSaude(planoEscolhido); // Define o plano no paciente
+                    paciente.setPlanoSaude(planoEscolhido);
                     System.out.println("Plano associado com sucesso!");
                     break;
                 } else {
                     System.out.println("Plano não encontrado. Tente novamente.");
                 }
             } else if (resposta.equals("N")) {
-                paciente.setPlanoSaude(null); // Nenhum plano
+                paciente.setPlanoSaude(null);
                 break;
             } else {
                 System.out.println("Resposta inválida! Digite S para Sim ou N para Não.");
@@ -160,36 +158,42 @@ public class AdmPaciente {
         return null;
     }
     private void carregarDados() {
-        File pasta = new File("dados");
-        if (!pasta.exists()) {
-            pasta.mkdir();
-        }
-
         try (BufferedReader br = new BufferedReader(new FileReader(File_name))) {
             String linha;
+            AdmPlanoSaude admPlano = new AdmPlanoSaude();
             while ((linha = br.readLine()) != null) {
                 String[] campos = linha.split("--");
+                int idPlano = (campos.length > 4 && !campos[4].equals("null"))
+                        ? Integer.parseInt(campos[4])
+                        : -1;
+
+                PlanoSaude plano = (idPlano != -1)
+                        ? admPlano.getPlanos().stream()
+                        .filter(p -> p.getId() == idPlano)
+                        .findFirst()
+                        .orElse(null)
+                        : null;
+
                 Paciente paciente = new Paciente(
                         Integer.parseInt(campos[0]),
                         campos[1],
                         campos[2],
                         Integer.parseInt(campos[3])
                 );
+                paciente.setPlanoSaude(plano);
                 pacientes.add(paciente);
                 nextIdP = Math.max(nextIdP, paciente.getId() + 1);
             }
+        } catch (IOException e) {
+            System.out.println("Erro ao carregar dados: " + e.getMessage());
         }
-        catch (FileNotFoundException e) {
-            System.out.println("Arquivo de pacientes não existe ainda. Será criado na primeira gravação.");
-        }
-        catch (IOException e) {
-            System.out.println("Erro ao carregar os dados: " + e.getMessage());
-        }
-
     }
     private void salvarDados() {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(File_name))) {
             for (Paciente paciente : pacientes) {
+                String planoId = (paciente.getPlanoSaude() != null)
+                        ? String.valueOf(paciente.getPlanoSaude().getId())
+                        : "null";
                 String linha = paciente.getId() + "--" + paciente.getNome() + "--" +
                         paciente.getCpf() + "--" + paciente.getIdade();
                 bw.write(linha);

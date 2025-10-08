@@ -20,8 +20,8 @@ public class AdmConsulta {
         carregarDados();
     }
 
-    public void menuAdmConsulta(AdmMedico admMedico, AdmPaciente admPaciente) {
-        int opcao = 0;
+    public void menuAdmConsulta(AdmPaciente admPaciente, AdmMedico admMedico) {
+        int opcao = -1;
         do {
             System.out.println("\nMENU DE CONSULTAS:");
             System.out.println("1 - Agendar Consulta");
@@ -93,7 +93,6 @@ public class AdmConsulta {
         String horarioStr = sc.nextLine();
         LocalTime horario = LocalTime.parse(horarioStr);
 
-        // Verifica se o médico já tem consulta neste horário
         if (sistemaConsultas.verificarConflitoHorario(medico, horario)) {
             System.out.println("Médico já tem consulta agendada neste horário!");
             return;
@@ -108,17 +107,7 @@ public class AdmConsulta {
         salvarDados();
     }
 
-    private void listarConsultas() {
-        if (consultas.isEmpty()) {
-            System.out.println("Nenhuma consulta agendada.");
-            return;
-        }
 
-        System.out.println("\nLista de Consultas:");
-        for (Consulta consulta : consultas) {
-            System.out.println(consulta);
-        }
-    }
 
     private void buscarConsultaPorMedico(AdmMedico admMedico) {
         admMedico.listarMedicos();
@@ -167,6 +156,18 @@ public class AdmConsulta {
             salvarDados();
         } else {
             System.out.println("Índice inválido!");
+        }
+    }
+    private void listarConsultas() {
+        if (consultas.isEmpty()) {
+            System.out.println("Nenhuma consulta agendada.");
+            return;
+        }
+
+        System.out.println("\nLista de Consultas:");
+        for (Consulta consulta : consultas) {
+            System.out.println(consulta.toString());
+            System.out.printf("Valor com desconto: R\\$%.2f\n", consulta.getValorComDesconto());
         }
     }
 

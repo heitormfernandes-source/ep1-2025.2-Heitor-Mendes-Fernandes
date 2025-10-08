@@ -1,17 +1,27 @@
 package entities;
 
 import adm.AdmInternacao;
-
 import java.util.ArrayList;
 import java.util.List;
 
-public class Paciente {
-    private String nome;
+public class Paciente extends Pessoa {
     private String cpf;
     private int idade;
     private int id;
     private PlanoSaude planoSaude;
-    private List<Consulta> historicoConsultas = new ArrayList<>();
+    private static List<Consulta> historicoConsultas = new ArrayList<>();
+    private static List<Internacao> historicoInternacoes = new ArrayList<>();
+
+    public Paciente() {
+        super();
+    }
+
+    public Paciente(int id, String nome, String cpf, int idade) {
+        super(nome);
+        this.id = id;
+        setCpf(cpf);
+        setIdade(idade);
+    }
 
     public PlanoSaude getPlanoSaude() {
         return planoSaude;
@@ -21,30 +31,15 @@ public class Paciente {
         this.planoSaude = planoSaude;
     }
 
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        if (nome.matches("[a-zA-Z\s]+")) {
-            this.nome = nome;
-        }
-        else {
-            throw new IllegalArgumentException("Nome inválido. Dígite apenas letras.");
-        }
-    }
-
     public String getCpf() {
         return cpf;
     }
 
     public void setCpf(String cpf) {
-        if (cpf.matches("\\d{11}")) {
-            this.cpf = cpf;
-        }
-        else {
+        if (cpf == null || !cpf.matches("\\d{11}")) {
             throw new IllegalArgumentException("CPF inválido. Deve conter exatamente 11 dígitos.");
         }
+        this.cpf = cpf;
     }
 
     public int getIdade() {
@@ -52,11 +47,10 @@ public class Paciente {
     }
 
     public void setIdade(int idade) {
-        if (idade >= 0 && idade <= 125) {
-            this.idade = idade;
-        } else {
+        if (idade < 0 || idade > 125) {
             throw new IllegalArgumentException("Idade inválida. Deve estar entre 0 e 125.");
         }
+        this.idade = idade;
     }
 
     public int getId() {
@@ -67,37 +61,19 @@ public class Paciente {
         this.id = id;
     }
 
-    public Paciente() {
-    }
-
-    public Paciente(int id, String nome, String cpf, int idade) {
-        this.id = id;
-        setNome(nome);
-        setCpf(cpf);
-        setIdade(idade);
-    }
     public void adicionarConsulta(Consulta consulta) {
         historicoConsultas.add(consulta);
     }
-    public List<Consulta> getHistoricoConsultas() {
+
+    public static List<Consulta> getHistoricoConsultas() {
         return new ArrayList<>(historicoConsultas);
     }
-    public List<Internacao> getHistoricoInternacoes(AdmInternacao admInternacao) {
-        if (admInternacao == null) {
-            return new ArrayList<>();
-        }
-        return admInternacao.getInternacoes().stream()
-                .filter(i -> i.getPaciente() != null && i.getPaciente().equals(this))
-                .toList();
-    }
-    private List<Internacao> historicoInternacoes = new ArrayList<>();
 
     public void adicionarInternacao(Internacao internacao) {
         historicoInternacoes.add(internacao);
     }
 
-    public List<Internacao> getHistoricoInternacoes() {
+    public static List<Internacao> getHistoricoInternacoes() {
         return new ArrayList<>(historicoInternacoes);
     }
-
 }

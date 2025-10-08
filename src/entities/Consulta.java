@@ -35,6 +35,15 @@ public class Consulta {
         this.realizada = realizada;
     }
 
+    public double getValorComDesconto() {
+        double valorOriginal = medico.getPreco();
+        if (paciente != null && paciente.getPlanoSaude() != null) {
+            double desconto = paciente.getPlanoSaude().getDesconto();
+            return valorOriginal * (1 - desconto);
+        }
+        return valorOriginal;
+    }
+
     @Override
     public String toString() {
         return "Consulta{" +

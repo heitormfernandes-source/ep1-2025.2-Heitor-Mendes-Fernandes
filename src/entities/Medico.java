@@ -4,13 +4,25 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Medico {
-    private String nome;
+public class Medico extends Pessoa {
     private String crm;
     private String especialidade;
     private double preco;
     private int idM;
     private Map<LocalDateTime, Boolean> agenda = new HashMap<>();
+
+    public Medico() {
+        super();
+    }
+
+    public Medico(int idM, String nome, String crm, String especialidade, double preco) {
+        super(nome);
+        this.idM = idM;
+        setCrm(crm);
+        setEspecialidade(especialidade);
+        setPreco(preco);
+        inicializarAgenda();
+    }
 
     public int getIdM() {
         return idM;
@@ -27,22 +39,8 @@ public class Medico {
     public void setPreco(double preco) {
         if (preco > 0) {
             this.preco = preco;
-        }
-        else {
+        } else {
             throw new IllegalArgumentException("Preço inválido. Deve ser maior que 0");
-        }
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        if (nome.matches("[a-zA-Z\s]+")) {
-            this.nome = nome;
-        }
-        else {
-            throw new IllegalArgumentException("Nome inválido. Digite apenas letras.");
         }
     }
 
@@ -59,26 +57,13 @@ public class Medico {
     }
 
     public void setEspecialidade(String especialidade) {
-        if (especialidade.matches("[a-zA-Z\s]+")) {
-            this.especialidade = especialidade;
+        if (especialidade == null || !especialidade.matches("[a-zA-Z\s]+")) {
+            throw new IllegalArgumentException("Especialidade inválida. Deve conter apenas letras.");
         }
-        else {
-            throw new IllegalArgumentException("Nome inválido. Deve conter apenas letras.");
-        }
-    }
-    public Medico(){
-    }
-    public Medico(int idM, String nome, String crm, String especialidade, double preco){
-        this.idM=idM;
-        setNome(nome);
-        setCrm(crm);
-        setEspecialidade(especialidade);
-        setPreco(preco);
-        inicializarAgenda();
+        this.especialidade = especialidade;
     }
 
     private void inicializarAgenda() {
-        // Inicializa horários para o dia atual como exemplo
         LocalDateTime hoje = LocalDateTime.now().toLocalDate().atStartOfDay();
 
         Agenda agendaDia = new Agenda(hoje);
